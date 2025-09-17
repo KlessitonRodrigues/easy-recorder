@@ -2,7 +2,7 @@
 
 :root {
   font-family: "Roboto", sans-serif;
-  /*  --text-9xl: 5rem;
+  --text-9xl: 5rem;
   --text-8xl: 4.5rem;
   --text-7xl: 4rem;
   --text-6xl: 3.5rem;
@@ -23,5 +23,5 @@
   --text-01: #212529;
   --text-02: #495057;
   --text-03: #6c757d;
-  --text-04: #adb5bd;*/
+  --text-04: #adb5bd;
 }

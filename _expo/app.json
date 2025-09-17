@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "seller-app",
+    "slug": "seller-app",
+    "version": "1.0.0",
+    "platforms": [
+      "android"
+    ],
+    "android": {
+      "package": "com.klessiton.sellerapp"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "9d59816e-f0b7-40f7-bf4a-62b8276639b1"
+      }
+    }
+  }
+}
