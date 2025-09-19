@@ -82,7 +82,7 @@ export const VideoEditor = () => {
           <PiCameraBold size={34} className="text-gray-500" />
         </VideoCard>
       </Row>
-      <Row className="p-4 border border-gray-400 rounded-xl">
+      <Row className="p-4 border border-gray-400 rounded-xl h-40">
         {videoList.map((video, index) => (
           <VideoCardPurple key={index} onClick={() => setEditVideo(video)}>
             <PiVideo size={40} className="text-purple-500" />
