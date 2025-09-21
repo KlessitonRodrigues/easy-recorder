@@ -11,6 +11,7 @@ export const Video = ({ className, ...props }: IVideo) => {
       controls
       muted
       className={twMerge(`w-full overflow-hidden rounded-3xl ${className}`)}
+      controlsList="nodownload"
     />
   );
 };

@@ -1,31 +1,50 @@
-import { useEffect, useState } from "react";
-import { mergeVideos, screenRecord } from "src/utils/video";
+import { useState } from "react";
+import { downloadFile, mergeVideos, screenRecord } from "src/utils/video";
 
 const useScreenRecord = () => {
   const [inRecording, setRecording] = useState(false);
-  const [recordTime, setRecordTime] = useState(0);
   const [videoList, setVideoList] = useState<File[]>([]);
   const [editVideo, setEditVideo] = useState<File>();
+  const [mediaStream, setMediaStream] = useState<MediaStream>();
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder>();
+  const [recordStartTime, setRecordStartTime] = useState<number>(0);
 
-  const onRecordStart = async () => {
+  const onStartRecord = async () => {
     setRecording(true);
     setEditVideo(undefined);
-    const videoData = await screenRecord();
+    const videoData = await screenRecord({
+      onStart: (stream, recording) => {
+        setMediaStream(stream);
+        setMediaRecorder(recording);
+        setRecordStartTime(Date.now());
+      },
+    });
     setVideoList((prev) => [...prev, videoData]);
     setEditVideo(videoData);
     setRecording(false);
+    setRecordStartTime(0);
+    setMediaStream(undefined);
+    setMediaRecorder(undefined);
+  };
+
+  const onPauseRecord = () => {
+    if (mediaRecorder) mediaRecorder.pause();
+  };
+
+  const onResumeRecord = () => {
+    if (mediaRecorder) mediaRecorder.resume();
+  };
+
+  const onStopRecord = () => {
+    if (mediaRecorder) mediaRecorder.stop();
+    if (mediaStream) {
+      mediaStream.getTracks().forEach((track) => track.stop());
+    }
   };
 
   const onDownload = () => {
     if (!editVideo) return;
-    const url = URL.createObjectURL(editVideo);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = editVideo.name;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    downloadFile(editVideo);
   };
 
   const onMergeAllVideos = async () => {
@@ -44,20 +63,17 @@ const useScreenRecord = () => {
     return URL.createObjectURL(file);
   };
 
-  useEffect(() => {
-    if (!inRecording) return setRecordTime(0);
-    const timer = setTimeout(() => setRecordTime(recordTime + 1), 1000);
-    return () => clearInterval(timer);
-  }, [inRecording, recordTime]);
-
   return {
     inRecording,
-    recordTime,
     videoList,
     editVideo,
+    recordStartTime,
     setEditVideo,
     setRecording,
-    onRecordStart,
+    onStartRecord,
+    onStopRecord,
+    onPauseRecord,
+    onResumeRecord,
     onDownload,
     onMergeAllVideos,
     onCleanList,

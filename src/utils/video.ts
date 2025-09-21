@@ -1,24 +1,39 @@
 import { dateFormat } from "./date";
 
-export const screenRecord = async () => {
+type IScreenRecord = {
+  previewId?: string;
+  videoBitsPerSecond?: number;
+  audioBitsPerSecond?: number;
+  onStart: (stream: MediaStream, record: MediaRecorder) => void;
+};
+
+export const screenRecord = async (props: IScreenRecord) => {
   return new Promise<File>(async (resolve, reject) => {
-    let stream: MediaStream | null = null;
     try {
+      const {
+        previewId = "record_preview",
+        videoBitsPerSecond = 2500000,
+        audioBitsPerSecond = 128000,
+        onStart,
+      } = props;
+
+      let stream: MediaStream | null = null;
+
       stream = await navigator.mediaDevices.getDisplayMedia({
         video: true,
         audio: true,
       });
 
-      let videoPreview = document.getElementById(
-        "record_preview"
-      ) as HTMLVideoElement | null;
-      if (videoPreview) {
-        videoPreview.srcObject = stream;
-        videoPreview.play();
+      let videoEl = document.getElementById(previewId) as HTMLVideoElement;
+      if (videoEl) {
+        videoEl.srcObject = stream;
+        videoEl.play();
       }
 
       const mediaRecorder = new MediaRecorder(stream, {
         mimeType: "video/webm; codecs=vp9",
+        videoBitsPerSecond,
+        audioBitsPerSecond,
       });
 
       const chunks: BlobPart[] = [];
@@ -39,10 +54,44 @@ export const screenRecord = async () => {
       };
 
       mediaRecorder.start();
+
+      onStart && onStart(stream, mediaRecorder);
     } catch (err) {
       console.error("Error recording screen:", err);
       reject(err);
     }
+  });
+};
+
+export const downloadFile = (file: File) => {
+  const url = URL.createObjectURL(file);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = file.name || "recorded-video.webm";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+export const getVideoThumb = (file: File) => {
+  return new Promise<string>((resolve) => {
+    const video = document.createElement("video");
+    video.src = URL.createObjectURL(file);
+    video.currentTime = 1;
+    video.onloadeddata = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imgData = canvas.toDataURL("image/png");
+        resolve(imgData);
+      } else {
+        resolve("");
+      }
+    };
   });
 };
 

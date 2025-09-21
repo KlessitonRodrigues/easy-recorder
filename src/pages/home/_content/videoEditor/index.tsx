@@ -20,11 +20,13 @@ import Paragraph from "src/lib/common/Text/Paragraph";
 export const VideoEditor = () => {
   const {
     inRecording,
-    recordTime,
+    recordStartTime,
     editVideo,
     videoList,
     fileToURL,
-    onRecordStart,
+    onStartRecord,
+    onStopRecord,
+    onPauseRecord,
     onDownload,
     onCleanList,
     setEditVideo,
@@ -33,23 +35,23 @@ export const VideoEditor = () => {
   return (
     <Column item="start" gap={4}>
       <Row className="w-fit">
-        <If check={!(inRecording && recordTime)}>
-          <SolidButtonRed onClick={onRecordStart}>
+        <If check={!(inRecording && recordStartTime)}>
+          <SolidButtonRed onClick={onStartRecord}>
             <PiRecordBold size={18} />
             Record
           </SolidButtonRed>
         </If>
-        <If check={!!(inRecording && recordTime)}>
-          <SolidButtonRed>
+        <If check={!!(inRecording && recordStartTime)}>
+          <SolidButtonRed onClick={onPauseRecord}>
             <PiPause size={18} />
-            Recording {recordTime}s
+            Pause {recordStartTime}s
           </SolidButtonRed>
         </If>
-        <SolidButton onClick={onRecordStart} disabled={!inRecording}>
+        <SolidButton onClick={onStopRecord} disabled={!inRecording}>
           <PiPause size={18} />
           Stop
         </SolidButton>
-        <SolidButton onClick={onRecordStart}>
+        <SolidButton onClick={onStartRecord}>
           <PiUser size={18} />
           Webcam
         </SolidButton>
