@@ -25,3 +25,40 @@
   --text-03: #6c757d;
   --text-04: #adb5bd;
 }
+
+/*
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-01: #181a1b;
+    --bg-02: #23272a;
+    --bg-03: #2c2f33;
+    --bg-04: #36393f;
+    --text-01: #f8f9fa;
+    --text-02: #dee2e6;
+    --text-03: #adb5bd;
+    --text-04: #6c757d;
+  }
+}
+*/
+
+body {
+  background-color: var(--bg-01);
+  color: var(--text-01);
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+* {
+  box-sizing: border-box;
+}
+
+.bg-01 {
+  background-color: var(--bg-01);
+}
+.bg-02 {
+  background-color: var(--bg-02);
+}
